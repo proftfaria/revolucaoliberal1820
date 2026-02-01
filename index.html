@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Revolução Liberal de 1820 - Guia de Estudo</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        stone: { 50: '#fafaf9', 100: '#f5f5f4', 200: '#e7e5e4', 300: '#d6d3d1', 400: '#a8a29e', 500: '#78716c', 600: '#57534e', 700: '#44403c', 800: '#292524', 900: '#1c1917' },
+                        amber: { 50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d', 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309', 800: '#92400e', 900: '#78350f' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #fafaf9; color: #1c1917; font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Toast Animation */
+        .toast-enter { animation: slideInDown 0.5s forwards; }
+        .toast-exit { animation: slideOutUp 0.5s forwards; }
+        
+        @keyframes slideInDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideOutUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-100%); opacity: 0; } }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative overflow-x-hidden">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-4 left-0 right-0 z-50 flex justify-center pointer-events-none"></div>
+
+    <!-- App Container -->
+    <div id="app" class="flex-grow flex flex-col max-w-4xl mx-auto w-full p-4 md:p-6">
+        <!-- Content injected by JS -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="p-6 text-center text-stone-400 text-sm font-serif">
+        Teodósio Faria ©2026 Guia de Estudo da Revolução Liberal de 1820
+    </footer>
+
+    <!-- Modals -->
+    <dialog id="test-intro-modal" class="rounded-2xl shadow-2xl p-0 backdrop:bg-stone-900/50 w-full max-w-md open:animate-fade-in">
+        <div class="bg-white p-6 md:p-8">
+            <h2 class="text-2xl font-serif font-bold text-stone-900 mb-2">Modo de Teste</h2>
+            <p class="text-stone-600 mb-6">Insere o teu nome para iniciar a avaliação. No final terás acesso a um relatório detalhado.</p>
+            <form id="test-start-form">
+                <label class="block text-sm font-bold text-stone-700 mb-2">Nome do Estudante</label>
+                <input type="text" id="student-name" required class="w-full p-3 border-2 border-stone-300 rounded-lg focus:outline-none focus:border-stone-800 mb-6" placeholder="Ex: João Silva">
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeModal('test-intro-modal')" class="px-4 py-2 text-stone-600 font-bold hover:bg-stone-100 rounded-lg">Cancelar</button>
+                    <button type="submit" class="px-6 py-2 bg-stone-900 text-white font-bold rounded-lg hover:bg-black">Iniciar Teste</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="topic-select-modal" class="rounded-2xl shadow-2xl p-0 backdrop:bg-stone-900/50 w-full max-w-lg open:animate-fade-in">
+        <div class="bg-white p-6 md:p-8">
+            <h2 class="text-2xl font-serif font-bold text-amber-600 mb-2">Treino Personalizado</h2>
+            <p class="text-stone-600 mb-6">Seleciona os tópicos que queres estudar.</p>
+            <form id="topic-form">
+                <div id="topic-checkboxes" class="space-y-3 mb-6 max-h-60 overflow-y-auto">
+                    <!-- Injected via JS -->
+                </div>
+                <div class="flex justify-between items-center pt-4 border-t border-stone-100">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="toggleAllTopics()" class="text-sm text-stone-500 hover:text-stone-800 underline">Selecionar Todos</button>
+                        <span class="text-stone-300">|</span>
+                        <button type="button" onclick="clearAllTopics()" class="text-sm text-stone-500 hover:text-stone-800 underline">Limpar</button>
+                    </div>
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeModal('topic-select-modal')" class="px-4 py-2 text-stone-600 font-bold hover:bg-stone-100 rounded-lg">Cancelar</button>
+                        <button type="submit" class="px-6 py-2 bg-amber-600 text-white font-bold rounded-lg hover:bg-amber-700">Começar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog id="progress-modal" class="rounded-2xl shadow-2xl p-0 backdrop:bg-stone-900/50 w-full max-w-2xl open:animate-fade-in">
+        <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-serif font-bold text-stone-900">Meu Progresso</h2>
+                <button onclick="closeModal('progress-modal')" class="p-2 hover:bg-stone-100 rounded-full"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 text-center">
+                    <div class="text-3xl font-bold text-amber-600" id="stat-points">0</div>
+                    <div class="text-xs text-amber-800 font-bold uppercase">Pontos Totais</div>
+                </div>
+                <div class="bg-stone-100 p-4 rounded-xl border border-stone-200 text-center">
+                    <div class="text-3xl font-bold text-stone-700" id="stat-correct">0</div>
+                    <div class="text-xs text-stone-500 font-bold uppercase">Questões Corretas</div>
+                </div>
+                <div class="bg-stone-100 p-4 rounded-xl border border-stone-200 text-center">
+                    <div class="text-3xl font-bold text-stone-700" id="stat-streak">0</div>
+                    <div class="text-xs text-stone-500 font-bold uppercase">Melhor Sequência</div>
+                </div>
+            </div>
+
+            <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i data-lucide="award" class="text-amber-500"></i> Conquistas (Badges)</h3>
+            <div id="badges-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <!-- Badges injected via JS -->
+            </div>
+
+            <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="text-amber-500"></i> Performance por Tema</h3>
+            <div id="performance-chart" class="space-y-4">
+                 <!-- Chart injected via JS -->
+            </div>
+        </div>
+    </dialog>
+
+    <script>
+        // --- CONFIG ---
+        const CATEGORIES = {
+            ANTECEDENTS: 'Antecedentes e Invasões',
+            REVOLUTION: 'A Revolução de 1820',
+            CONSTITUTION: 'Constituição de 1822',
+            BRAZIL: 'Independência do Brasil',
+            CIVIL_WAR: 'Guerra Civil (1832-1834)'
+        };
+
+        const BADGES_CONFIG = [
+            { id: 'novice', name: 'Iniciante', icon: '🌱', description: 'Acerta em 5 questões.', check: (s) => s.totalCorrect >= 5 },
+            { id: 'apprentice', name: 'Aprendiz', icon: '📚', description: 'Acerta em 20 questões.', check: (s) => s.totalCorrect >= 20 },
+            { id: 'expert', name: 'Especialista', icon: '🏆', description: 'Acumula 500 pontos.', check: (s) => s.totalPoints >= 500 },
+            { id: 'streak_master', name: 'Em Chamas', icon: '🔥', description: '5 respostas corretas seguidas.', check: (s) => s.currentStreak >= 5 },
+            { id: 'perfectionist', name: 'Perfeccionista', icon: '💎', description: '100% de acerto num teste completo.', check: (s) => false } // Checked manually in results
+        ];
+
+        const QUESTIONS_DB = [
+             // --- ANTECEDENTS ---
+            {
+                id: 'q1', category: CATEGORIES.ANTECEDENTS, type: 'MULTIPLE_CHOICE',
+                prompt: 'Em que território se encontrava a família real portuguesa durante as Invasões Francesas?',
+                options: ['França', 'Inglaterra', 'Brasil', 'Espanha'],
+                correctAnswer: 'Brasil',
+                explanation: 'A Família Real e a Corte transferiram-se para o Brasil em 1807 para fugir às Invasões Francesas, tornando o Rio de Janeiro a capital do Império.',
+                tips: ['Procura um território que fosse uma colónia portuguesa na altura.', 'Fica na América do Sul.'],
+                points: 10
+            },
+            {
+                id: 'q2', category: CATEGORIES.ANTECEDENTS, type: 'TEXT_INPUT',
+                prompt: 'Qual o nome do General Inglês que governou Portugal com mão de ferro após a expulsão dos franceses?',
+                correctAnswer: 'Beresford',
+                explanation: 'O General William Beresford reorganizou o exército português mas manteve-se no poder, controlando o comércio e reprimindo conspirações liberais.',
+                tips: ['O nome é de origem inglesa.', 'Começa por Ber.'],
+                points: 15
+            },
+            {
+                id: 'q3', category: CATEGORIES.ANTECEDENTS, type: 'MULTIPLE_CHOICE',
+                prompt: 'Quem liderou a conspiração liberal de 1817?',
+                options: ['Manuel Fernandes Tomás', 'Gomes Freire de Andrade', 'D. Pedro IV', 'D. Miguel'],
+                correctAnswer: 'Gomes Freire de Andrade',
+                explanation: 'O General Gomes Freire de Andrade, Grão-Mestre da Maçonaria, foi acusado de conspiração e enforcado em 1817 por ordem de Beresford.',
+                tips: ['Era um General muito respeitado.', 'Foi executado no Forte de São Julião da Barra.'],
+                points: 10
+            },
+            {
+                id: 'q4', category: CATEGORIES.ANTECEDENTS, type: 'MULTIPLE_SELECT',
+                prompt: 'Indica as causas principais que levaram à Revolução Liberal de 1820.',
+                options: ['A permanência da Corte no Brasil', 'O domínio inglês em Portugal', 'A morte de D. Maria I', 'A crise económica e o descontentamento da burguesia', 'A invasão espanhola'],
+                correctAnswer: ['A permanência da Corte no Brasil', 'O domínio inglês em Portugal', 'A crise económica e o descontentamento da burguesia'],
+                explanation: 'A Revolução foi motivada pela condição de "colónia" face ao Brasil, a humilhação do controlo inglês (Beresford) e a grave crise económica.',
+                tips: ['Pensa no que fazia os portugueses sentirem-se abandonados pelo rei.', 'Lembra-te quem controlava o exército.'],
+                points: 20
+            },
+            {
+                id: 'q31', category: CATEGORIES.ANTECEDENTS, type: 'MATCHING',
+                prompt: "Identifica os elementos da família real fazendo a correspondência correta:",
+                matchingPairs: [
+                    { left: "D. Pedro IV", rightOptions: ["1", "2", "3", "4"], correctRight: "2" },
+                    { left: "D. Miguel", rightOptions: ["1", "2", "3", "4"], correctRight: "3" },
+                    { left: "D. João VI", rightOptions: ["1", "2", "3", "4"], correctRight: "1" },
+                    { left: "D. Maria II", rightOptions: ["1", "2", "3", "4"], correctRight: "4" }
+                ],
+                explanation: "D. João VI é pai de D. Pedro IV e D. Miguel. D. Maria II é filha de D. Pedro IV.",
+                tips: ["D. Pedro IV e D. Miguel são irmãos.", "Observe a legenda da imagem se existir."],
+                image: "./image1.jpg",
+                points: 20
+            },
+            // --- REVOLUTION ---
+            {
+                id: 'q5', category: CATEGORIES.REVOLUTION, type: 'MULTIPLE_CHOICE',
+                prompt: 'Em que cidade começou a Revolução Liberal de 1820?',
+                options: ['Lisboa', 'Coimbra', 'Porto', 'Braga'],
+                correctAnswer: 'Porto',
+                explanation: 'A revolução eclodiu no Porto a 24 de agosto de 1820, estendendo-se depois a Lisboa e ao resto do país.',
+                tips: ['É uma cidade a norte de Portugal.', 'Conhecida como a cidade Invicta.'],
+                points: 10
+            },
+            {
+                id: 'q6', category: CATEGORIES.REVOLUTION, type: 'DROPDOWN',
+                prompt: 'A associação secreta que preparou a revolução no Porto chamava-se:',
+                options: ['Maçonaria', 'Sinédrio', 'Carbonária', 'Junta do Porto'],
+                correctAnswer: 'Sinédrio',
+                explanation: 'O Sinédrio foi fundado por Manuel Fernandes Tomás em 1818 e tinha como objetivo preparar a revolução liberal.',
+                tips: ['Foi criada especificamente para preparar a revolução.', 'O nome tem origem grega/bíblica.'],
+                points: 10
+            },
+            {
+                id: 'q7', category: CATEGORIES.REVOLUTION, type: 'TEXT_INPUT',
+                prompt: 'Qual a data exata da Revolução Liberal (Dia de Mês de Ano)?',
+                correctAnswer: '24 de agosto de 1820',
+                explanation: 'A 24 de agosto de 1820, as tropas reuniram-se no Campo de Santo Ovídio, no Porto, para proclamar a revolução.',
+                tips: ['Foi no verão de 1820 em agosto.', 'O dia é 24.'],
+                points: 15
+            },
+            {
+                id: 'q8', category: CATEGORIES.REVOLUTION, type: 'TRUE_FALSE',
+                prompt: 'O principal objetivo imediato da Revolução era expulsar os ingleses e convocar Cortes Constituintes.',
+                correctAnswer: 'Verdadeiro',
+                options: ['Verdadeiro', 'Falso'],
+                explanation: 'Correto. Os revolucionários queriam o fim do protetorado inglês e a elaboração de uma Constituição.',
+                tips: ['Lembra-te que eles queriam mudar a forma como o país era governado.', 'Beresford era um alvo.'],
+                points: 5
+            },
+            {
+                id: 'q9', category: CATEGORIES.REVOLUTION, type: 'ORDERING',
+                prompt: 'Ordena cronologicamente os acontecimentos da Revolução:',
+                options: ['Formação do Sinédrio', 'Conspiração de 1817', 'Revolução de 1820 no Porto', 'Regresso de D. João VI', 'Aprovação da Constituição de 1822'],
+                correctAnswer: ['Conspiração de 1817', 'Formação do Sinédrio', 'Revolução de 1820 no Porto', 'Regresso de D. João VI', 'Aprovação da Constituição de 1822'],
+                explanation: '1817 (Gomes Freire) -> 1818 (Sinédrio) -> 1820 (Revolução) -> 1821 (Regresso Rei) -> 1822 (Constituição).',
+                tips: ['A morte de Gomes Freire inspirou a criação do Sinédrio.', 'A Constituição é o resultado final do processo legislativo.'],
+                points: 25
+            },
+            // --- CONSTITUTION ---
+            {
+                id: 'q10', category: CATEGORIES.CONSTITUTION, type: 'MULTIPLE_CHOICE',
+                prompt: 'O que é uma Constituição?',
+                options: ['Um conjunto de leis sobre o comércio.', 'A Lei fundamental de um país que define a organização política e os direitos dos cidadãos.', 'Um tratado de paz entre liberais e absolutistas.', 'Uma ordem direta do Rei.'],
+                correctAnswer: 'A Lei fundamental de um país que define a organização política e os direitos dos cidadãos.',
+                explanation: 'A Constituição é o documento supremo que limita o poder dos governantes e garante direitos e deveres aos cidadãos.',
+                tips: ['É a "Lei das Leis".', 'Define quem manda e como manda.'],
+                points: 10
+            },
+            {
+                id: 'q11', category: CATEGORIES.CONSTITUTION, type: 'MULTIPLE_SELECT',
+                prompt: 'Quais os princípios fundamentais defendidos pelos Liberais na Constituição de 1822?',
+                options: ['Soberania Nacional', 'Direito Divino dos Reis', 'Separação dos Poderes', 'Privilégios do Clero e Nobreza', 'Igualdade perante a Lei'],
+                correctAnswer: ['Soberania Nacional', 'Separação dos Poderes', 'Igualdade perante a Lei'],
+                explanation: 'O Liberalismo opõe-se ao Absolutismo, defendendo que o poder reside na Nação (não no Rei) e que todos são iguais perante a lei.',
+                tips: ['O oposto do que os Reis Absolutos queriam.', 'Pensa em Liberdade, Igualdade...'],
+                points: 15
+            },
+            {
+                id: 'q12', category: CATEGORIES.CONSTITUTION, type: 'DROPDOWN',
+                prompt: 'Na Monarquia Constitucional, o Poder Legislativo pertence:',
+                options: ['Ao Rei', 'Às Cortes (Deputados)', 'Aos Juízes', 'Ao Exército'],
+                correctAnswer: 'Às Cortes (Deputados)',
+                explanation: 'O Poder Legislativo (fazer as leis) cabe aos deputados eleitos pelos cidadãos nas Cortes.',
+                tips: ['Quem faz as leis?', 'São eleitos pelo povo.'],
+                points: 10
+            },
+            {
+                id: 'q13', category: CATEGORIES.CONSTITUTION, type: 'TRUE_FALSE',
+                prompt: 'A Constituição de 1822 estabelecia o sufrágio universal (todos podiam votar).',
+                correctAnswer: 'Falso',
+                options: ['Verdadeiro', 'Falso'],
+                explanation: 'Falso. O sufrágio era restrito. As mulheres, analfabetos e frades não podiam votar.',
+                tips: ['Será que as mulheres votavam em 1822?', 'Era muito diferente de hoje.'],
+                points: 5
+            },
+            {
+                id: 'q14', category: CATEGORIES.CONSTITUTION, type: 'MULTIPLE_CHOICE',
+                prompt: 'O que significa "Soberania Nacional"?',
+                options: ['O poder reside no Rei.', 'O poder reside na Nação (cidadãos) e é exercido pelos seus representantes.', 'O poder reside no Exército.', 'O poder vem de Deus.'],
+                correctAnswer: 'O poder reside na Nação (cidadãos) e é exercido pelos seus representantes.',
+                explanation: 'É o princípio base do liberalismo: a autoridade política emana do povo, não de uma figura divina ou dinástica.',
+                tips: ['Quem é a "Nação"?', 'Ao contrário do "Direito Divino".'],
+                points: 10
+            },
+            {
+                id: 'q32', category: CATEGORIES.CONSTITUTION, type: 'MATCHING',
+                prompt: "Faz corresponder os princípios fundamentais do Liberalismo ao respetivo artigo da Constituição de 1822.",
+                matchingPairs: [
+                    { left: "Separação dos poderes", rightOptions: ["art.º 7", "art.º 9", "art.º 26", "art.º 29", "art.º 30"], correctRight: "art.º 26" },
+                    { left: "Liberdade", rightOptions: ["art.º 7", "art.º 9", "art.º 26", "art.º 29", "art.º 30"], correctRight: "art.º 7" },
+                    { left: "Soberania nacional", rightOptions: ["art.º 7", "art.º 9", "art.º 26", "art.º 29", "art.º 30"], correctRight: "art.º 29" },
+                    { left: "Igualdade", rightOptions: ["art.º 7", "art.º 9", "art.º 26", "art.º 29", "art.º 30"], correctRight: "art.º 9" },
+                    { left: "Regime político", rightOptions: ["art.º 7", "art.º 9", "art.º 26", "art.º 29", "art.º 30"], correctRight: "art.º 30" }
+                ],
+                explanation: "art.º 30 estabelece o regime político como monarquia constitucional.",
+                tips: ["art.º 26 estabelece a separação dos poderes.", "art.º 7 estabelece a liberdade individual.", "art.º 29 estabelece a soberania nacional."],
+                image: "./image2.jpg",
+                points: 20
+            },
+            // --- BRAZIL ---
+            {
+                id: 'q15', category: CATEGORIES.BRAZIL, type: 'MULTIPLE_CHOICE',
+                prompt: 'Qual destas medidas das Cortes de Lisboa desagradou aos brasileiros?',
+                options: ['A elevação a Reino Unido.', 'A abertura dos portos.', 'A exigência do regresso de D. Pedro e a redução do Brasil a colónia.', 'A criação de universidades.'],
+                correctAnswer: 'A exigência do regresso de D. Pedro e a redução do Brasil a colónia.',
+                explanation: 'As Cortes Constituintes queriam anular a autonomia conquistada pelo Brasil, o que precipitou a independência.',
+                tips: ['Eles queriam voltar a controlar o comércio brasileiro.', 'Queriam que o príncipe voltasse para Portugal.'],
+                points: 10
+            },
+            {
+                id: 'q16', category: CATEGORIES.BRAZIL, type: 'TEXT_INPUT',
+                prompt: 'Em que data foi proclamada a independência do Brasil (Dia de Mês de Ano)?',
+                correctAnswer: '7 de setembro de 1822',
+                explanation: 'O famoso "Grito do Ipiranga" ocorreu a 7 de setembro de 1822.',
+                tips: ['Dia 7 de setembro é feriado nacional no Brasil.', 'Foi no mesmo ano da primeira Constituição portuguesa.'],
+                points: 15
+            },
+            {
+                id: 'q17', category: CATEGORIES.BRAZIL, type: 'MULTIPLE_CHOICE',
+                prompt: 'Quem é a figura histórica responsável pelo "Grito do Ipiranga"?',
+                options: ['D. João VI', 'D. Pedro IV', 'D. Miguel', 'General Beresford'],
+                correctAnswer: 'D. Pedro IV',
+                explanation: 'D. Pedro (I do Brasil, IV de Portugal) recusou regressar a Portugal e declarou "Independência ou Morte!".',
+                tips: ['Era filho de D. João VI.', 'Tornou-se o primeiro Imperador do Brasil.'],
+                points: 10
+            },
+            // --- CIVIL WAR ---
+            {
+                id: 'q18', category: CATEGORIES.CIVIL_WAR, type: 'MULTIPLE_CHOICE',
+                prompt: 'Quem liderava a fação Absolutista na Guerra Civil?',
+                options: ['D. Pedro IV', 'D. Maria II', 'D. Miguel', 'Passos Manuel'],
+                correctAnswer: 'D. Miguel',
+                explanation: 'D. Miguel, irmão de D. Pedro, liderou os absolutistas e usurpou o trono em 1828.',
+                tips: ['Era o irmão mais novo de D. Pedro.', 'Defendia o regresso ao passado.'],
+                points: 10
+            },
+            {
+                id: 'q19', category: CATEGORIES.CIVIL_WAR, type: 'DROPDOWN',
+                prompt: 'O desembarque das tropas liberais que marcou o início da vitória liberal ocorreu em:',
+                options: ['Lisboa', 'Algarve', 'Mindelo (perto do Porto)', 'Açores'],
+                correctAnswer: 'Mindelo (perto do Porto)',
+                explanation: 'O Desembarque do Mindelo (1832) permitiu a D. Pedro cercar o Porto e iniciar a reconquista do território.',
+                tips: ['Fica a norte.', 'Os "Bravos do..." é uma expressão famosa.'],
+                points: 15
+            },
+            {
+                id: 'q20', category: CATEGORIES.CIVIL_WAR, type: 'TEXT_INPUT',
+                prompt: 'Onde foi assinado o tratado de paz que pôs fim à Guerra Civil em 1834?',
+                correctAnswer: 'Évora Monte',
+                explanation: 'A Convenção de Évora Monte selou a derrota definitiva de D. Miguel e o triunfo do Liberalismo.',
+                tips: ['Fica no Alentejo e começa por Évora...', 'É uma Convenção cujo nome termina em Monte.'],
+                points: 15
+            },
+            {
+                id: 'q21', category: CATEGORIES.CONSTITUTION, type: 'TRUE_FALSE',
+                prompt: 'O Poder Executivo (Governo) na Constituição de 1822 era exercido pelas Cortes.',
+                correctAnswer: 'Falso',
+                options: ['Verdadeiro', 'Falso'],
+                explanation: 'Falso. O Poder Executivo pertencia ao Rei e aos seus Ministros (Governo), embora limitado pela lei.',
+                tips: ['As Cortes fazem as leis (Legislativo).', 'Quem executa as leis é o Governo.'],
+                points: 5
+            },
+            {
+                id: 'q22', category: CATEGORIES.ANTECEDENTS, type: 'MULTIPLE_SELECT',
+                prompt: 'Quais as consequências das Invasões Francesas para Portugal?',
+                options: ['Destruição de campos e indústrias', 'Fuga da Corte', 'Aumento da riqueza nacional', 'Domínio político inglês'],
+                correctAnswer: ['Destruição de campos e indústrias', 'Fuga da Corte', 'Domínio político inglês'],
+                explanation: 'As invasões deixaram o país devastado, sem rei (no Brasil) e controlado por ingleses.',
+                tips: ['Portugal ficou mais rico ou mais pobre?', 'Quem ficou a mandar no exército?'],
+                points: 15
+            },
+            {
+                id: 'q23', category: CATEGORIES.REVOLUTION, type: 'MULTIPLE_CHOICE',
+                prompt: 'Manuel Fernandes Tomás é uma figura central porque:',
+                options: ['Foi general do exército.', 'Fundou o Sinédrio e redigiu as bases da Constituição.', 'Foi rei de Portugal.', 'Apoiou D. Miguel.'],
+                correctAnswer: 'Fundou o Sinédrio e redigiu as bases da Constituição.',
+                explanation: 'Manuel Fernandes Tomás é considerado o "pai" da Revolução de 1820 pelo seu papel intelectual e político.',
+                tips: ['Era um magistrado do Porto.', 'Líder do Sinédrio.'],
+                points: 10
+            },
+            {
+                id: 'q24', category: CATEGORIES.CIVIL_WAR, type: 'ORDERING',
+                prompt: 'Ordena os acontecimentos da Guerra Civil:',
+                options: ['Desembarque do Mindelo',  'Morte de D. João VI','Golpe de D. Miguel (Absolutismo)', 'Convenção de Évora Monte'],
+                correctAnswer: ['Morte de D. João VI', 'Golpe de D. Miguel (Absolutismo)', 'Desembarque do Mindelo', 'Convenção de Évora Monte'],
+                explanation: 'Morte do Rei (1826) -> Miguel usurpa (1828) -> Pedro desembarca (1832) -> Paz (1834).',
+                tips: ['D. Miguel só toma o poder depois do pai morrer.', 'A paz é sempre no fim.'],
+                points: 20
+            },
+            {
+                id: 'q25', category: CATEGORIES.BRAZIL, type: 'TRUE_FALSE',
+                prompt: 'A abertura dos portos brasileiros em 1808 beneficiou os comerciantes portugueses.',
+                correctAnswer: 'Falso',
+                options: ['Verdadeiro', 'Falso'],
+                explanation: 'Falso. Abertura dos portos acabou com o monopólio português, prejudicando a burguesia nacional.',
+                tips: ['Quem é que passou a poder comerciar diretamente com o Brasil?', 'Os ingleses lucraram muito.'],
+                points: 10
+            },
+            {
+                id: 'q26', category: CATEGORIES.ANTECEDENTS, type: 'MULTIPLE_CHOICE',
+                prompt: 'Em que ano ocorreu a partida da Família Real?',
+                options: ['1807', '1820', '1834', '1822'],
+                correctAnswer: '1807',
+                explanation: 'A partida ocorreu em novembro de 1807, pouco antes da chegada de Junot a Lisboa.',
+                tips: ['Foi no início das invasões francesas.', 'Aconteceu antes de 1810.'],
+                points: 5
+            },
+            {
+                id: 'q27', category: CATEGORIES.CONSTITUTION, type: 'MULTIPLE_CHOICE',
+                prompt: 'Quem era o Chefe de Estado segundo a Constituição de 1822?',
+                options: ['O Presidente da República', 'O Primeiro-Ministro', 'O Rei (D. João VI)', 'O Papa'],
+                correctAnswer: 'O Rei (D. João VI)',
+                explanation: 'Era uma Monarquia Constitucional, logo o Rei continuava a ser o Chefe de Estado, mas sem poder absoluto.',
+                tips: ['Não era uma República.', 'O cargo era hereditário.'],
+                points: 5
+            },
+            {
+                id: 'q28', category: CATEGORIES.CIVIL_WAR, type: 'TEXT_INPUT',
+                prompt: 'Que nome se dá ao cerco que as tropas absolutistas fizeram ao exército liberal no Porto durante a guerra?',
+                correctAnswer: 'Cerco do Porto',
+                explanation: 'O "Cerco do Porto" durou cerca de um ano e foi um momento heroico da resistência liberal.',
+                tips: ['Foi um cerco à cidade Invicta.', 'Nome simples: Cerco do...'],
+                points: 10
+            },
+            {
+                id: 'q29', category: CATEGORIES.REVOLUTION, type: 'MULTIPLE_SELECT',
+                prompt: 'A Junta Provisional do Governo Supremo do Reino tinha como funções:',
+                options: ['Organizar as eleições para as Cortes', 'Governar o país interinamente', 'Declarar guerra a Espanha', 'Restaurar o Absolutismo'],
+                correctAnswer: ['Organizar as eleições para as Cortes', 'Governar o país interinamente'],
+                explanation: 'A Junta governou após a revolução com o objetivo de preparar a transição para o sistema constitucional.',
+                tips: ['Alguém tinha de mandar enquanto não havia Constituição.', 'Precisavam de eleger deputados.'],
+                points: 15
+            },
+            {
+                id: 'q30', category: CATEGORIES.CONSTITUTION, type: 'MULTIPLE_CHOICE',
+                prompt: 'Qual destes poderes, NÃO é um poder independente no Liberalismo?',
+                options: ['Legislativo', 'Executivo', 'Judicial', 'Moderador (na Const. 1822)'],
+                correctAnswer: 'Moderador (na Const. 1822)',
+                explanation: 'A Constituição de 1822 consagrava a divisão tripartida clássica. O Poder Moderador só surge na Carta de 1826.',
+                tips: ['São apenas 3 poderes clássicos.', 'O poder do Rei de equilibrar os outros não existia em 1822.'],
+                points: 10
+            },
+            {
+                id: 'q33', category: CATEGORIES.CIVIL_WAR, type: 'MULTIPLE_SELECT',
+                prompt: 'Seleciona batalhas da guerra entre liberais e absolutistas.',
+                options: ['Almoster', 'Vimeiro', 'Roliça', 'Buçaco', 'Asseiceira'],
+                correctAnswer: ['Almoster', 'Asseiceira'],
+                explanation: 'Almoster (1834) e Asseiceira (1834) foram batalhas decisivas na Guerra Civil. Vimeiro e Roliça são das Invasões Francesas.',
+                tips: ['Lembra-te que a guerra civil foi entre 1832-1834.', 'Vimeiro e Roliça foram em 1808.'],
+                image: './image3.jpg',
+                points: 15
+            },
+            {
+                id: 'q34', category: CATEGORIES.ANTECEDENTS, type: 'MULTIPLE_SELECT',
+                prompt: 'O que defendiam os Liberais?',
+                options: ['Defendiam que o rei detinha todos os poderes', 'Defendiam a Monarquia Constitucional', 'Defendiam a Monarquia Absoluta', 'Defendiam os princípios de igualdade/ liberdade/ separação de poderes'],
+                correctAnswer: ['Defendiam a Monarquia Constitucional', 'Defendiam os princípios de igualdade/ liberdade/ separação de poderes'],
+                explanation: 'Os Liberais queriam limitar o poder do rei através de uma Constituição que garantisse direitos aos cidadãos.',
+                tips: ['Pensa no oposto da Monarquia Absolutista.', 'Lembra-te dos princípios básicos do Liberalismo.'],
+                points: 15
+            },
+            {
+                id: 'q35', category: CATEGORIES.ANTECEDENTS, type: 'MULTIPLE_SELECT',
+                prompt: 'O que defendiam os Absolutistas?',
+                options: ['Defendiam que o rei detinha todos os poderes', 'Defendiam a Monarquia Constitucional', 'Defendiam a Monarquia Absoluta', 'Defendiam os princípios de igualdade/ liberdade/ separação de poderes'],
+                correctAnswer: ['Defendiam que o rei detinha todos os poderes', 'Defendiam a Monarquia Absoluta'],
+                explanation: 'Os Absolutistas defendiam o poder absoluto do rei e a manutenção do sistema monárquico tradicional.',
+                tips: ['Pensa no oposto da Monarquia Constitucional.', 'Lembra-te que não queriam mudanças.'],
+                points: 15
+            }
+        ];
+
+        // --- STATE & PERSISTENCE ---
+        const State = {
+            mode: 'STUDY', // 'STUDY', 'TEST', 'TRAINING'
+            questions: [],
+            currentIndex: 0,
+            answers: {}, // { index: { correct: bool, value: any } }
+            score: 0,
+            studentName: '',
+            selectedTopics: [],
+            feedbackShown: false,
+            tipLevel: 0,
+            // Persistent Stats
+            stats: {
+                totalPoints: 0,
+                totalCorrect: 0,
+                currentStreak: 0,
+                bestStreak: 0,
+                unlockedBadges: [],
+                categoryStats: {} // { categoryName: { correct: 0, total: 0 } }
+            },
+            
+            reset() {
+                this.currentIndex = 0;
+                this.answers = {};
+                this.score = 0;
+                this.feedbackShown = false;
+                this.tipLevel = 0;
+                // Don't reset streak here, only on wrong answer
+            },
+
+            loadStats() {
+                const saved = localStorage.getItem('liberal1820_stats');
+                if (saved) {
+                    this.stats = JSON.parse(saved);
+                    // Migration for categoryStats if missing
+                    if (!this.stats.categoryStats) this.stats.categoryStats = {};
+                }
+            },
+
+            saveStats() {
+                localStorage.setItem('liberal1820_stats', JSON.stringify(this.stats));
+            }
+        };
+
+        // --- UTILS ---
+        const normalizeText = (text) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        
+        const shuffleArray = (array) => {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        };
+
+        const closeModal = (id) => document.getElementById(id).close();
+        const openModal = (id) => document.getElementById(id).showModal();
+
+        function showToast(title, message, icon) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-enter bg-white border border-amber-200 shadow-xl rounded-xl p-4 flex items-center gap-3 mb-3 mx-4 max-w-sm pointer-events-auto';
+            toast.innerHTML = `
+                <div class="text-3xl">${icon}</div>
+                <div>
+                    <h4 class="font-bold text-amber-900">${title}</h4>
+                    <p class="text-sm text-amber-700">${message}</p>
+                </div>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+
+        // --- RENDER FUNCTIONS ---
+        
+        function initApp() {
+            State.loadStats();
+            lucide.createIcons();
+            renderHome();
+        }
+
+        function renderHome() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="flex flex-col items-center justify-center min-h-[80vh] text-center fade-in">
+                    <h1 class="text-4xl md:text-6xl font-serif font-bold text-stone-900 mb-6">A Revolução Liberal de 1820</h1>
+                    <p class="text-xl text-stone-600 mb-12 max-w-2xl">Guia de estudo interativo sobre o nascimento do Liberalismo em Portugal, a Constituição de 1822 e a Guerra Civil.</p>
+                    
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full max-w-5xl">
+                        <button onclick="startStudyMode()" class="bg-white p-6 rounded-2xl shadow-lg border-b-4 border-amber-500 hover:-translate-y-1 transition-all group flex flex-col items-center">
+                            <i data-lucide="book-open" class="w-10 h-10 text-amber-600 mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-lg font-bold mb-1">Modo Estudo</h3>
+                            <p class="text-xs text-stone-500">Feedback imediato e dicas.</p>
+                        </button>
+
+                        <button onclick="setupTestMode()" class="bg-white p-6 rounded-2xl shadow-lg border-b-4 border-stone-600 hover:-translate-y-1 transition-all group flex flex-col items-center">
+                            <i data-lucide="brain-circuit" class="w-10 h-10 text-stone-700 mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-lg font-bold mb-1">Modo Teste</h3>
+                            <p class="text-xs text-stone-500">Simulação de exame.</p>
+                        </button>
+
+                        <button onclick="setupTrainingMode()" class="bg-white p-6 rounded-2xl shadow-lg border-b-4 border-emerald-500 hover:-translate-y-1 transition-all group flex flex-col items-center">
+                            <i data-lucide="target" class="w-10 h-10 text-emerald-600 mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-lg font-bold mb-1">Treino</h3>
+                            <p class="text-xs text-stone-500">Por tópicos específicos.</p>
+                        </button>
+
+                        <button onclick="openProgress()" class="bg-white p-6 rounded-2xl shadow-lg border-b-4 border-indigo-500 hover:-translate-y-1 transition-all group flex flex-col items-center">
+                            <i data-lucide="bar-chart-3" class="w-10 h-10 text-indigo-600 mb-3 group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-lg font-bold mb-1">Meu Progresso</h3>
+                            <p class="text-xs text-stone-500">Estatísticas e Badges.</p>
+                        </button>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // --- BADGES & STATS LOGIC ---
+
+        function checkBadges() {
+            let newBadges = [];
+            
+            BADGES_CONFIG.forEach(badge => {
+                if (!State.stats.unlockedBadges.includes(badge.id)) {
+                    if (badge.check(State.stats)) {
+                        State.stats.unlockedBadges.push(badge.id);
+                        newBadges.push(badge);
+                    }
+                }
+            });
+
+            State.saveStats();
+
+            newBadges.forEach(badge => {
+                showToast('Nova Conquista!', `Desbloqueaste: ${badge.name}`, badge.icon);
+            });
+        }
+
+        function openProgress() {
+            document.getElementById('stat-points').innerText = State.stats.totalPoints;
+            document.getElementById('stat-correct').innerText = State.stats.totalCorrect;
+            document.getElementById('stat-streak').innerText = State.stats.bestStreak;
+
+            const grid = document.getElementById('badges-grid');
+            grid.innerHTML = BADGES_CONFIG.map(badge => {
+                const unlocked = State.stats.unlockedBadges.includes(badge.id);
+                return `
+                    <div class="flex flex-col items-center text-center p-4 rounded-xl border ${unlocked ? 'bg-amber-50 border-amber-300' : 'bg-stone-50 border-stone-200 grayscale opacity-60'}">
+                        <div class="text-3xl mb-2">${badge.icon}</div>
+                        <div class="font-bold text-sm ${unlocked ? 'text-stone-800' : 'text-stone-500'}">${badge.name}</div>
+                        <div class="text-xs text-stone-500 mt-1">${badge.description}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Render Performance Chart
+            const chartContainer = document.getElementById('performance-chart');
+            chartContainer.innerHTML = Object.values(CATEGORIES).map(cat => {
+                const stats = (State.stats.categoryStats && State.stats.categoryStats[cat]) || { correct: 0, total: 0 };
+                const percent = stats.total === 0 ? 0 : Math.round((stats.correct / stats.total) * 100);
+                const colorClass = percent >= 50 ? 'bg-emerald-500' : 'bg-red-500';
+                const textClass = percent >= 50 ? 'text-emerald-600' : 'text-red-600';
+
+                return `
+                    <div class="mb-2">
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="font-bold text-sm text-stone-700">${cat}</span>
+                            <span class="text-xs font-bold ${textClass}">
+                                ${stats.correct}/${stats.total} (${percent}%)
+                            </span>
+                        </div>
+                        <div class="w-full bg-stone-200 rounded-full h-2.5 overflow-hidden">
+                            <div id="prog-${cat.replace(/[^a-zA-Z]/g, '')}" class="h-2.5 rounded-full transition-all duration-1000 ease-out ${colorClass}" style="width: 0%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            openModal('progress-modal');
+            
+            // Animate bars after render
+            setTimeout(() => {
+                Object.values(CATEGORIES).forEach(cat => {
+                    const stats = (State.stats.categoryStats && State.stats.categoryStats[cat]) || { correct: 0, total: 0 };
+                    const percent = stats.total === 0 ? 0 : Math.round((stats.correct / stats.total) * 100);
+                    const el = document.getElementById(`prog-${cat.replace(/[^a-zA-Z]/g, '')}`);
+                    if(el) el.style.width = `${percent}%`;
+                });
+            }, 100);
+        }
+
+        // --- MODE SETUP ---
+
+        function startStudyMode() {
+            State.mode = 'STUDY';
+            State.reset();
+            State.questions = shuffleArray(QUESTIONS_DB);
+            renderQuiz();
+        }
+
+        function setupTestMode() {
+            openModal('test-intro-modal');
+        }
+
+        function startTestMode(e) {
+            e.preventDefault();
+            const name = document.getElementById('student-name').value.trim();
+            if(!name) return;
+            
+            State.studentName = name;
+            State.mode = 'TEST';
+            State.reset();
+            State.questions = shuffleArray(QUESTIONS_DB);
+            closeModal('test-intro-modal');
+            renderQuiz();
+        }
+
+        function setupTrainingMode() {
+            const container = document.getElementById('topic-checkboxes');
+            container.innerHTML = Object.values(CATEGORIES).map(cat => `
+                <label class="flex items-center gap-3 p-3 border rounded-lg hover:bg-stone-50 cursor-pointer">
+                    <input type="checkbox" name="topics" value="${cat}" class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500">
+                    <span class="font-medium text-stone-700">${cat}</span>
+                </label>
+            `).join('');
+            openModal('topic-select-modal');
+        }
+        
+        function toggleAllTopics() {
+            const checkboxes = document.querySelectorAll('input[name="topics"]');
+            const allChecked = [...checkboxes].every(c => c.checked);
+            checkboxes.forEach(c => c.checked = !allChecked);
+        }
+
+        function clearAllTopics() {
+             const checkboxes = document.querySelectorAll('input[name="topics"]');
+             checkboxes.forEach(c => c.checked = false);
+        }
+
+        function startTrainingMode(e) {
+            e.preventDefault();
+            const checked = [...document.querySelectorAll('input[name="topics"]:checked')].map(cb => cb.value);
+            if (checked.length === 0) {
+                alert("Seleciona pelo menos um tópico.");
+                return;
+            }
+            State.selectedTopics = checked;
+            State.mode = 'TRAINING';
+            State.reset();
+            // Filter then shuffle
+            const filtered = QUESTIONS_DB.filter(q => checked.includes(q.category));
+            State.questions = shuffleArray(filtered);
+            
+            closeModal('topic-select-modal');
+            renderQuiz();
+        }
+
+        // --- QUIZ LOGIC ---
+
+        function renderQuiz() {
+            if (State.currentIndex >= State.questions.length) {
+                renderResults();
+                return;
+            }
+
+            const q = State.questions[State.currentIndex];
+            const isTest = State.mode === 'TEST';
+            const showFeedback = State.feedbackShown && !isTest;
+            const currentAnswer = State.answers[State.currentIndex];
+
+            // Re-render container
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="w-full flex justify-between items-center mb-6">
+                    <button onclick="renderHome()" class="p-2 hover:bg-stone-200 rounded-full text-stone-500"><i data-lucide="home"></i></button>
+                    <div class="flex-1 mx-4 h-3 bg-stone-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-amber-500 transition-all duration-500" style="width: ${((State.currentIndex + 1) / State.questions.length) * 100}%"></div>
+                    </div>
+                    <span class="font-mono text-stone-500 font-bold">${State.currentIndex + 1}/${State.questions.length}</span>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 w-full border-b-4 border-stone-200 fade-in relative">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-stone-100 text-stone-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">${q.category}</span>
+                        ${!isTest ? `
+                        <button onclick="toggleTip()" id="tip-btn" class="flex items-center gap-2 text-amber-600 hover:text-amber-700 font-bold text-sm disabled:opacity-50" ${showFeedback ? 'disabled' : ''}>
+                            <i data-lucide="lightbulb" size="18"></i> 
+                            ${State.tipLevel === 0 ? "Pedir Dica" : State.tipLevel === 1 ? "Mais Ajuda" : "Dicas Esgotadas"}
+                        </button>` : ''}
+                    </div>
+
+                    <h2 class="text-xl md:text-2xl font-serif text-stone-900 mb-6 font-medium leading-relaxed">${q.prompt}</h2>
+
+                    ${q.image ? `<div class="mb-6 rounded-lg overflow-hidden border border-stone-200">
+                        <img src="${q.image}" onerror="this.src='https://placehold.co/600x300/e7e5e4/44403c?text=Imagem+Em+Falta'" class="w-full h-auto object-cover max-h-60">
+                    </div>` : ''}
+
+                    <!-- TIP AREA -->
+                    <div id="tip-area" class="${State.tipLevel > 0 && !showFeedback ? 'block' : 'hidden'} mb-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+                        <p class="text-sm text-amber-900 font-bold mb-1">💡 Dica ${State.tipLevel}:</p>
+                        <p class="text-stone-700">${q.tips[State.tipLevel - 1]}</p>
+                    </div>
+
+                    <!-- INPUTS -->
+                    <div id="input-area" class="space-y-3 mb-8">
+                        ${renderInput(q, showFeedback, currentAnswer ? currentAnswer.value : null)}
+                    </div>
+
+                    <!-- FEEDBACK -->
+                    ${showFeedback ? `
+                    <div class="mb-8 p-6 rounded-xl ${currentAnswer.correct ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'} fade-in">
+                        <div class="flex items-center gap-2 font-bold text-lg mb-2 ${currentAnswer.correct ? 'text-green-800' : 'text-red-800'}">
+                            <i data-lucide="${currentAnswer.correct ? 'check-circle-2' : 'x-circle'}"></i>
+                            ${currentAnswer.correct ? `Correto! +${q.points} pontos` : 'Incorreto'}
+                        </div>
+                        <p class="text-stone-700 leading-relaxed">${q.explanation}</p>
+                    </div>
+                    ` : ''}
+
+                    <div class="flex justify-center">
+                        ${(isTest && currentAnswer) || showFeedback ? `
+                            <button onclick="nextQuestion()" class="px-8 py-3 bg-stone-900 text-white rounded-full font-bold flex items-center gap-2 hover:bg-black transition-colors shadow-lg">
+                                ${State.currentIndex === State.questions.length - 1 ? "Ver Resultados" : "Próxima Questão"} <i data-lucide="chevron-right"></i>
+                            </button>
+                        ` : `
+                            <button onclick="submitAnswer('${q.id}')" class="w-full md:w-auto px-12 py-4 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-lg shadow-lg transition-all active:scale-95">
+                                Responder
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function renderInput(q, showFeedback, savedValue) {
+            const disabled = showFeedback || (State.mode === 'TEST' && State.answers[State.currentIndex]);
+            
+            if (q.type === 'MATCHING') {
+                // Initialize if not set
+                let selection = savedValue || {};
+                // Force initialization in temp state if needed
+                if (!savedValue && !tempSelection) {
+                    tempSelection = {};
+                } else if(savedValue) {
+                    tempSelection = {...savedValue}; // Load saved
+                }
+
+                return `
+                    <div class="space-y-4">
+                        ${q.matchingPairs.map((pair) => {
+                            const currentVal = selection[pair.left] || (tempSelection && tempSelection[pair.left]) || "";
+                            let borderColor = "border-stone-200";
+                            
+                            if (showFeedback) {
+                                if (currentVal === pair.correctRight) borderColor = "border-green-500 bg-green-50";
+                                else borderColor = "border-red-500 bg-red-50";
+                            }
+
+                            return `
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 border-2 rounded-lg bg-white ${borderColor} gap-2">
+                                    <span class="font-medium text-stone-700">${pair.left}</span>
+                                    <select onchange="setMatchingOption('${pair.left}', this.value)" ${disabled ? 'disabled' : ''} class="p-2 border rounded-lg bg-stone-50 min-w-[100px]">
+                                        <option value="" disabled ${!currentVal ? 'selected' : ''}>Escolha...</option>
+                                        ${pair.rightOptions.map(opt => `<option value="${opt}" ${currentVal === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                                    </select>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+
+            if (q.type === 'MULTIPLE_CHOICE' || q.type === 'TRUE_FALSE') {
+                return q.options.map(opt => {
+                    let className = "w-full p-4 text-left rounded-xl border-2 transition-all flex justify-between items-center font-medium ";
+                    const isSelected = savedValue === opt;
+                    const isCorrect = opt === q.correctAnswer;
+                    
+                    if (showFeedback) {
+                        if (isCorrect) className += "border-green-500 bg-green-50 text-green-900";
+                        else if (isSelected) className += "border-red-500 bg-red-50 text-red-900";
+                        else className += "border-stone-200 opacity-60";
+                    } else {
+                        if (isSelected) className += "border-amber-500 bg-amber-50 text-amber-900 ring-2 ring-amber-200";
+                        else className += "border-stone-200 hover:border-stone-300 hover:bg-stone-50 bg-white text-stone-700";
+                    }
+                    
+                    return `<button onclick="selectOption('${opt}')" ${disabled ? 'disabled' : ''} class="${className}">${opt}</button>`;
+                }).join('');
+            }
+            
+            if (q.type === 'TEXT_INPUT') {
+                let className = "w-full p-4 text-lg border-2 rounded-xl focus:outline-none focus:ring-4 focus:ring-amber-100 transition-colors ";
+                if (showFeedback) {
+                    const isCorrect = normalizeText(savedValue || "") === normalizeText(q.correctAnswer);
+                    className += isCorrect ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50";
+                } else {
+                    className += "border-stone-300";
+                }
+                
+                return `
+                    <input type="text" id="text-input-${q.id}" value="${savedValue || ''}" 
+                    oninput="selectOption(this.value)" ${disabled ? 'disabled' : ''} 
+                    placeholder="Escreve a tua resposta..." class="${className}">
+                    ${showFeedback && normalizeText(savedValue || "") !== normalizeText(q.correctAnswer) ? `<p class="mt-2 text-green-700 font-bold">Resposta correta: ${q.correctAnswer}</p>` : ''}
+                `;
+            }
+
+            if (q.type === 'DROPDOWN') {
+                let className = "w-full p-4 appearance-none border-2 rounded-xl bg-white text-lg ";
+                if (showFeedback) {
+                     className += savedValue === q.correctAnswer ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50";
+                } else {
+                    className += "border-stone-300";
+                }
+
+                return `
+                    <div class="relative">
+                        <select onchange="selectOption(this.value)" ${disabled ? 'disabled' : ''} class="${className}">
+                            <option value="" disabled ${!savedValue ? 'selected' : ''}>Seleciona uma opção...</option>
+                            ${q.options.map(opt => `<option value="${opt}" ${savedValue === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                        </select>
+                        ${showFeedback && savedValue !== q.correctAnswer ? `<p class="mt-2 text-green-700 font-bold">Resposta correta: ${q.correctAnswer}</p>` : ''}
+                    </div>
+                `;
+            }
+
+            if (q.type === 'MULTIPLE_SELECT') {
+                const current = Array.isArray(savedValue) ? savedValue : [];
+                return q.options.map(opt => {
+                    const isSelected = current.includes(opt);
+                    const isCorrectAnswer = q.correctAnswer.includes(opt);
+                    
+                    let className = "w-full p-4 text-left rounded-xl border-2 transition-all flex justify-between items-center font-medium ";
+                    
+                    if (showFeedback) {
+                        if (isCorrectAnswer) className += "border-green-500 bg-green-50 text-green-900";
+                        else if (isSelected && !isCorrectAnswer) className += "border-red-500 bg-red-50 text-red-900";
+                        else className += "border-stone-200 opacity-60";
+                    } else {
+                        if (isSelected) className += "border-amber-500 bg-amber-50 text-amber-900";
+                        else className += "border-stone-200 hover:border-stone-300";
+                    }
+
+                    return `<button onclick="toggleMultiSelect('${opt}')" ${disabled ? 'disabled' : ''} class="${className}">
+                        ${opt}
+                        ${isSelected ? '<i data-lucide="check" class="w-5 h-5"></i>' : ''}
+                    </button>`;
+                }).join('');
+            }
+
+            if (q.type === 'ORDERING') {
+                // Initialize ordering if empty
+                let items = savedValue;
+                if (!items || items.length === 0) {
+                     // Initial state must be shuffled version of correct answer, but consistent
+                     // Since we don't have persistent state for initial shuffle in this simple structure, 
+                     // we'll assume the 'options' provided in DB are the initial shuffled state.
+                     items = q.options; 
+                     // Only set if not already set, to avoid reset on re-render
+                     if(!savedValue) setTimeout(() => selectOption(items), 0); 
+                }
+
+                return `
+                    <div class="space-y-2">
+                        ${items.map((item, idx) => `
+                            <div class="flex items-center gap-3 p-3 rounded-lg border-2 bg-white ${showFeedback ? (JSON.stringify(items) === JSON.stringify(q.correctAnswer) ? 'border-green-500' : 'border-red-500') : 'border-stone-200'}">
+                                <div class="flex flex-col gap-1">
+                                    <button onclick="moveOrder(${idx}, -1)" ${disabled || idx === 0 ? 'disabled' : ''} class="p-1 hover:bg-stone-100 rounded disabled:opacity-30 text-xs font-bold">▲</button>
+                                    <button onclick="moveOrder(${idx}, 1)" ${disabled || idx === items.length - 1 ? 'disabled' : ''} class="p-1 hover:bg-stone-100 rounded disabled:opacity-30 text-xs font-bold">▼</button>
+                                </div>
+                                <span class="flex-1 font-medium text-stone-700">${item}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${showFeedback ? `
+                        <div class="mt-4 p-3 bg-stone-100 rounded-lg text-sm">
+                            <span class="font-bold">Ordem Correta:</span>
+                            <ol class="list-decimal list-inside mt-2 space-y-1">
+                                ${q.correctAnswer.map(a => `<li>${a}</li>`).join('')}
+                            </ol>
+                        </div>
+                    ` : ''}
+                `;
+            }
+        }
+
+        // --- INTERACTION ---
+
+        // Temporary storage for current question input before submission
+        let tempSelection = null; 
+
+        function selectOption(val) {
+            tempSelection = val;
+            updateUISelection(); 
+        }
+
+        function setMatchingOption(leftKey, rightVal) {
+            if (!tempSelection || typeof tempSelection !== 'object') tempSelection = {};
+            tempSelection[leftKey] = rightVal;
+            // Don't re-render entire input area to keep focus/state, just update logic var
+            // Actually for matching with simple selects, re-rendering is fine if we pass state back in
+            updateUISelection();
+        }
+
+        function toggleMultiSelect(val) {
+            if (!Array.isArray(tempSelection)) tempSelection = [];
+            if (tempSelection.includes(val)) {
+                tempSelection = tempSelection.filter(i => i !== val);
+            } else {
+                tempSelection.push(val);
+            }
+            updateUISelection();
+        }
+
+        function moveOrder(index, direction) {
+            if (!Array.isArray(tempSelection)) tempSelection = [...State.questions[State.currentIndex].options];
+            const newItems = [...tempSelection];
+            [newItems[index], newItems[index + direction]] = [newItems[index + direction], newItems[index]];
+            tempSelection = newItems;
+            
+            // Re-render whole input area for ordering
+            const q = State.questions[State.currentIndex];
+            document.getElementById('input-area').innerHTML = renderInput(q, false, tempSelection);
+        }
+
+        function updateUISelection() {
+            // Simple re-render of input area except for text input to keep focus
+            const q = State.questions[State.currentIndex];
+            if (q.type !== 'TEXT_INPUT') {
+                document.getElementById('input-area').innerHTML = renderInput(q, false, tempSelection);
+                lucide.createIcons();
+            }
+        }
+
+        function toggleTip() {
+            if (State.tipLevel < 2) {
+                State.tipLevel++;
+                renderQuiz(); // Re-render to show tip
+            }
+        }
+
+        function submitAnswer(qid) {
+            const q = State.questions.find(q => q.id === qid);
+
+            // Validation of empty answers
+            if (q.type !== 'ORDERING') { // Ordering always has a value
+                 if (tempSelection === null) return;
+                 if (Array.isArray(tempSelection) && tempSelection.length === 0) return;
+                 if (q.type === 'MATCHING') {
+                     // Check if all pairs are answered
+                     const answeredKeys = Object.keys(tempSelection || {});
+                     if (answeredKeys.length < q.matchingPairs.length) {
+                         alert("Por favor, faz a correspondência de todos os elementos.");
+                         return;
+                     }
+                 }
+            }
+
+            // For Ordering, if tempSelection is null, use options (default state)
+            if (q.type === 'ORDERING' && !tempSelection) {
+                tempSelection = [...q.options];
+            }
+
+            let isCorrect = false;
+
+            if (q.type === 'TEXT_INPUT') {
+                isCorrect = normalizeText(tempSelection) === normalizeText(q.correctAnswer);
+            } else if (q.type === 'MULTIPLE_SELECT') {
+                const s = new Set(tempSelection);
+                const c = new Set(q.correctAnswer);
+                isCorrect = s.size === c.size && [...s].every(x => c.has(x));
+            } else if (q.type === 'ORDERING') {
+                isCorrect = JSON.stringify(tempSelection) === JSON.stringify(q.correctAnswer);
+            } else if (q.type === 'MATCHING') {
+                isCorrect = q.matchingPairs.every(pair => tempSelection[pair.left] === pair.correctRight);
+            } else {
+                isCorrect = tempSelection === q.correctAnswer;
+            }
+
+            State.answers[State.currentIndex] = { correct: isCorrect, value: tempSelection };
+
+            // UPDATE GLOBAL STATS
+            if (State.mode !== 'TEST') { // Update stats live for Study/Training
+                // Initialize Category Stats
+                if (!State.stats.categoryStats) State.stats.categoryStats = {};
+                if (!State.stats.categoryStats[q.category]) State.stats.categoryStats[q.category] = { correct: 0, total: 0 };
+                
+                // Update
+                State.stats.categoryStats[q.category].total++;
+                if (isCorrect) State.stats.categoryStats[q.category].correct++;
+
+                if (isCorrect) {
+                    State.stats.totalCorrect++;
+                    State.stats.totalPoints += q.points;
+                    State.stats.currentStreak++;
+                    if (State.stats.currentStreak > State.stats.bestStreak) {
+                        State.stats.bestStreak = State.stats.currentStreak;
+                    }
+                } else {
+                    State.stats.currentStreak = 0;
+                }
+                checkBadges();
+            }
+            
+            if (State.mode === 'TEST') {
+                // In test mode, we just save and move on
+                nextQuestion();
+            } else {
+                // Study/Training: Show feedback
+                if (isCorrect) State.score += q.points;
+                State.feedbackShown = true;
+                renderQuiz();
+            }
+        }
+
+        function nextQuestion() {
+            State.currentIndex++;
+            State.feedbackShown = false;
+            State.tipLevel = 0;
+            tempSelection = null; // Reset draft
+            renderQuiz();
+        }
+
+        // --- RESULTS ---
+
+        function renderResults() {
+            const totalQ = State.questions.length;
+            const correctCount = Object.values(State.answers).filter(a => a.correct).length;
+            const percentage = Math.round((correctCount / totalQ) * 100);
+            
+            // Check Perfectionist Badge in Test Mode
+            if (State.mode === 'TEST' && percentage === 100) {
+                 const badge = BADGES_CONFIG.find(b => b.id === 'perfectionist');
+                 if (!State.stats.unlockedBadges.includes(badge.id)) {
+                     State.stats.unlockedBadges.push(badge.id);
+                     showToast('Nova Conquista!', `Desbloqueaste: ${badge.name}`, badge.icon);
+                     State.saveStats();
+                 }
+            }
+            
+            // Classification
+            let classification = "Precisa Melhorar";
+            let colorClass = "text-red-600";
+            if (percentage >= 90) { classification = "Excelente"; colorClass = "text-emerald-600"; }
+            else if (percentage >= 70) { classification = "Bom"; colorClass = "text-green-600"; }
+            else if (percentage >= 50) { classification = "Suficiente"; colorClass = "text-amber-600"; }
+
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="bg-white rounded-3xl shadow-xl overflow-hidden mb-8 fade-in">
+                    <div class="bg-stone-900 p-8 text-center text-white">
+                        <h2 class="text-3xl font-serif mb-2">Relatório Final</h2>
+                        ${State.studentName ? `<p class="text-stone-400 mb-4">Aluno: ${State.studentName}</p>` : ''}
+                        <div class="text-6xl font-bold text-amber-500 mb-2">${percentage}%</div>
+                        <p class="text-xl font-bold mb-1 ${colorClass.replace('text-', 'text-amber-')}">${classification}</p>
+                        <p class="opacity-80">Acertaste ${correctCount} de ${totalQ} questões</p>
+                        ${State.mode !== 'TEST' ? `<p class="mt-4 text-sm bg-stone-800 inline-block px-4 py-1 rounded-full">Pontos da Sessão: ${State.score}</p>` : ''}
+                    </div>
+                    
+                    <div class="p-8">
+                        <h3 class="font-bold text-xl mb-6 border-b pb-2 text-stone-800">Revisão Detalhada</h3>
+                        <div class="space-y-6">
+                            ${State.questions.map((q, idx) => {
+                                const ans = State.answers[idx];
+                                const isCorrect = ans && ans.correct;
+                                
+                                // Format user answer for display
+                                let userVal = 'Sem resposta';
+                                if (ans) {
+                                    if (typeof ans.value === 'object' && !Array.isArray(ans.value)) {
+                                         // Matching type
+                                         userVal = Object.entries(ans.value).map(([k,v]) => `${k} -> ${v}`).join(', ');
+                                    } else if (Array.isArray(ans.value)) {
+                                        userVal = ans.value.join(', ');
+                                    } else {
+                                        userVal = ans.value;
+                                    }
+                                }
+
+                                const correctVal = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : (q.type === 'MATCHING' ? q.matchingPairs.map(p => `${p.left} -> ${p.correctRight}`).join(', ') : q.correctAnswer);
+
+                                return `
+                                    <div class="p-4 rounded-lg border-l-4 ${isCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <span class="text-xs font-bold text-stone-500 uppercase">${q.category}</span>
+                                            ${isCorrect ? '<i data-lucide="check-circle-2" class="text-green-600 w-5 h-5"></i>' : '<i data-lucide="x-circle" class="text-red-600 w-5 h-5"></i>'}
+                                        </div>
+                                        <p class="font-medium text-stone-900 mb-2">${q.prompt}</p>
+                                        
+                                        <div class="text-sm grid md:grid-cols-2 gap-4 mt-3">
+                                            <div class="${isCorrect ? 'text-green-800' : 'text-red-800'}">
+                                                <span class="font-bold">A tua resposta:</span><br>
+                                                ${userVal}
+                                            </div>
+                                            ${!isCorrect ? `
+                                            <div class="text-green-800">
+                                                <span class="font-bold">Resposta correta:</span><br>
+                                                ${correctVal}
+                                            </div>
+                                            ` : ''}
+                                        </div>
+                                        
+                                        ${!isCorrect || State.mode === 'STUDY' ? `
+                                            <div class="mt-3 text-xs md:text-sm text-stone-600 bg-white/50 p-2 rounded">
+                                                <span class="font-bold">Explicação:</span> ${q.explanation}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-4 mb-8">
+                    <button onclick="renderHome()" class="px-6 py-3 bg-stone-200 text-stone-800 rounded-xl font-bold hover:bg-stone-300 flex items-center gap-2">
+                        <i data-lucide="home"></i> Menu Principal
+                    </button>
+                    <button onclick="State.mode === 'TEST' ? setupTestMode() : (State.mode === 'TRAINING' ? setupTrainingMode() : startStudyMode())" class="px-6 py-3 bg-amber-600 text-white rounded-xl font-bold hover:bg-amber-700 flex items-center gap-2">
+                        <i data-lucide="refresh-cw"></i> Tentar Novamente
+                    </button>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // --- LISTENERS & INIT ---
+        document.getElementById('test-start-form').addEventListener('submit', startTestMode);
+        document.getElementById('topic-form').addEventListener('submit', startTrainingMode);
+
+        // Start
+        initApp();
+    </script>
+</body>
+</html>
