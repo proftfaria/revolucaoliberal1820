@@ -51,7 +51,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="p-6 text-center text-stone-400 text-sm font-serif">
+    <footer class="p-6 text-center text-stone-400 text-sm font-serif border-t border-stone-200 mt-auto">
         Teodósio Faria ©2026 Guia de Estudo da Revolução Liberal de 1820
     </footer>
 
@@ -101,18 +101,22 @@
                 <button onclick="closeModal('progress-modal')" class="p-2 hover:bg-stone-100 rounded-full"><i data-lucide="x"></i></button>
             </div>
             
-            <div class="grid grid-cols-3 gap-4 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 text-center">
-                    <div class="text-3xl font-bold text-amber-600" id="stat-points">0</div>
-                    <div class="text-xs text-amber-800 font-bold uppercase">Pontos Totais</div>
+                    <div class="text-2xl font-bold text-amber-600" id="stat-points">0</div>
+                    <div class="text-xs text-amber-800 font-bold uppercase">Pontos</div>
                 </div>
                 <div class="bg-stone-100 p-4 rounded-xl border border-stone-200 text-center">
-                    <div class="text-3xl font-bold text-stone-700" id="stat-correct">0</div>
-                    <div class="text-xs text-stone-500 font-bold uppercase">Questões Corretas</div>
+                    <div class="text-2xl font-bold text-stone-700" id="stat-correct">0</div>
+                    <div class="text-xs text-stone-500 font-bold uppercase">Corretas</div>
                 </div>
                 <div class="bg-stone-100 p-4 rounded-xl border border-stone-200 text-center">
-                    <div class="text-3xl font-bold text-stone-700" id="stat-streak">0</div>
-                    <div class="text-xs text-stone-500 font-bold uppercase">Melhor Sequência</div>
+                    <div class="text-2xl font-bold text-stone-700" id="stat-streak">0</div>
+                    <div class="text-xs text-stone-500 font-bold uppercase">Sequência</div>
+                </div>
+                 <div class="bg-stone-100 p-4 rounded-xl border border-stone-200 text-center">
+                    <div class="text-2xl font-bold text-stone-700" id="stat-games">0</div>
+                    <div class="text-xs text-stone-500 font-bold uppercase">Jogos</div>
                 </div>
             </div>
 
@@ -124,6 +128,41 @@
             <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i data-lucide="bar-chart-2" class="text-amber-500"></i> Performance por Tema</h3>
             <div id="performance-chart" class="space-y-4">
                  <!-- Chart injected via JS -->
+            </div>
+        </div>
+    </dialog>
+
+    <dialog id="guide-modal" class="rounded-2xl shadow-2xl p-0 backdrop:bg-stone-900/50 w-full max-w-lg open:animate-fade-in">
+        <div class="bg-white p-6 md:p-8 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-serif font-bold text-stone-900">Guia do Utilizador</h2>
+                <button onclick="closeModal('guide-modal')" class="p-2 hover:bg-stone-100 rounded-full"><i data-lucide="x"></i></button>
+            </div>
+            
+            <div class="space-y-6 text-stone-700 leading-relaxed">
+                <div>
+                    <h3 class="font-bold text-amber-600 text-lg mb-2 flex items-center gap-2"><i data-lucide="book-open" class="w-5"></i> Modo Estudo</h3>
+                    <p class="text-sm">Ideal para aprender. Recebes feedback imediato após cada resposta. Podes navegar livremente entre as questões e se errares, podes tentar novamente para fixar o conhecimento (embora os pontos só contem na primeira tentativa).</p>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-stone-700 text-lg mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-5"></i> Modo Teste</h3>
+                    <p class="text-sm">Simula um exame real. Podes saltar questões, voltar atrás e alterar as tuas respostas a qualquer momento. O resultado final só é revelado quando clicares em "Terminar Teste".</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-emerald-600 text-lg mb-2 flex items-center gap-2"><i data-lucide="target" class="w-5"></i> Treino Personalizado</h3>
+                    <p class="text-sm">Foca o teu estudo. Escolhe apenas os temas onde sentes mais dificuldade.</p>
+                </div>
+
+                <div class="bg-stone-50 p-4 rounded-lg border border-stone-200">
+                    <h4 class="font-bold text-stone-900 text-sm mb-2">Sistema de Pontuação e Badges</h4>
+                    <ul class="text-sm space-y-2 list-disc list-inside">
+                        <li>Ganha pontos por cada resposta correta.</li>
+                        <li>Mantém a sequência de acertos para ganhar badges especiais.</li>
+                        <li>O teu progresso é guardado automaticamente neste dispositivo.</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </dialog>
@@ -493,6 +532,7 @@
                 totalCorrect: 0,
                 currentStreak: 0,
                 bestStreak: 0,
+                totalGames: 0,
                 unlockedBadges: [],
                 categoryStats: {} // { categoryName: { correct: 0, total: 0 } }
             },
@@ -503,15 +543,13 @@
                 this.score = 0;
                 this.feedbackShown = false;
                 this.tipLevel = 0;
-                // Don't reset streak here, only on wrong answer
             },
 
             loadStats() {
                 const saved = localStorage.getItem('liberal1820_stats');
                 if (saved) {
-                    this.stats = JSON.parse(saved);
-                    // Migration for categoryStats if missing
-                    if (!this.stats.categoryStats) this.stats.categoryStats = {};
+                    const parsed = JSON.parse(saved);
+                    this.stats = { ...this.stats, ...parsed }; // Merge to ensure new fields like totalGames exist
                 }
             },
 
@@ -595,6 +633,10 @@
                             <p class="text-xs text-stone-500">Estatísticas e Badges.</p>
                         </button>
                     </div>
+
+                    <button onclick="openModal('guide-modal')" class="mt-8 text-stone-500 hover:text-stone-800 flex items-center gap-2 text-sm font-bold">
+                        <i data-lucide="help-circle" class="w-4 h-4"></i> Como funciona?
+                    </button>
                 </div>
             `;
             lucide.createIcons();
@@ -625,6 +667,7 @@
             document.getElementById('stat-points').innerText = State.stats.totalPoints;
             document.getElementById('stat-correct').innerText = State.stats.totalCorrect;
             document.getElementById('stat-streak').innerText = State.stats.bestStreak;
+            document.getElementById('stat-games').innerText = State.stats.totalGames || 0;
 
             const grid = document.getElementById('badges-grid');
             grid.innerHTML = BADGES_CONFIG.map(badge => {
@@ -750,7 +793,7 @@
 
             const q = State.questions[State.currentIndex];
             const isTest = State.mode === 'TEST';
-            const showFeedback = State.feedbackShown && !isTest;
+            const showFeedback = State.answers[State.currentIndex] && !isTest;
             const currentAnswer = State.answers[State.currentIndex];
 
             // Re-render container
@@ -764,7 +807,7 @@
                     <span class="font-mono text-stone-500 font-bold">${State.currentIndex + 1}/${State.questions.length}</span>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 w-full border-b-4 border-stone-200 fade-in relative">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 w-full border-b-4 border-stone-200 fade-in relative pb-24">
                     <div class="flex justify-between items-start mb-4">
                         <span class="bg-stone-100 text-stone-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">${q.category}</span>
                         ${!isTest ? `
@@ -799,19 +842,39 @@
                             ${currentAnswer.correct ? `Correto! +${q.points} pontos` : 'Incorreto'}
                         </div>
                         <p class="text-stone-700 leading-relaxed">${q.explanation}</p>
+                        <div class="mt-4">
+                             <button onclick="retryQuestion()" class="text-sm font-bold text-stone-500 hover:text-stone-800 underline">Tentar Novamente</button>
+                        </div>
                     </div>
                     ` : ''}
 
-                    <div class="flex justify-center">
-                        ${(isTest && currentAnswer) || showFeedback ? `
-                            <button onclick="nextQuestion()" class="px-8 py-3 bg-stone-900 text-white rounded-full font-bold flex items-center gap-2 hover:bg-black transition-colors shadow-lg">
-                                ${State.currentIndex === State.questions.length - 1 ? "Ver Resultados" : "Próxima Questão"} <i data-lucide="chevron-right"></i>
-                            </button>
-                        ` : `
-                            <button onclick="submitAnswer('${q.id}')" class="w-full md:w-auto px-12 py-4 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-lg shadow-lg transition-all active:scale-95">
-                                Responder
-                            </button>
-                        `}
+                    <!-- NAVIGATION & ACTIONS -->
+                    <div class="flex justify-between items-center pt-6 border-t border-stone-100">
+                         <button onclick="prevQuestion()" ${State.currentIndex === 0 ? 'disabled' : ''} class="px-4 py-2 text-stone-500 hover:bg-stone-100 rounded-lg font-bold disabled:opacity-30 flex items-center gap-2">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i> Anterior
+                         </button>
+
+                         ${isTest ? `
+                            ${State.currentIndex === State.questions.length - 1 ? `
+                                <button onclick="finishTest()" class="px-6 py-2 bg-stone-900 text-white rounded-lg font-bold hover:bg-black flex items-center gap-2">
+                                    Terminar Teste <i data-lucide="flag" class="w-4 h-4"></i>
+                                </button>
+                            ` : `
+                                <button onclick="nextQuestion()" class="px-6 py-2 bg-stone-200 text-stone-800 rounded-lg font-bold hover:bg-stone-300 flex items-center gap-2">
+                                    Seguinte <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </button>
+                            `}
+                         ` : `
+                            ${showFeedback ? `
+                                <button onclick="nextQuestion()" class="px-6 py-2 bg-stone-900 text-white rounded-lg font-bold hover:bg-black flex items-center gap-2">
+                                    Seguinte <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </button>
+                            ` : `
+                                <button onclick="submitAnswer()" class="px-6 py-2 bg-amber-600 text-white rounded-lg font-bold hover:bg-amber-700 shadow-lg">
+                                    Responder
+                                </button>
+                            `}
+                         `}
                     </div>
                 </div>
             `;
@@ -819,35 +882,44 @@
         }
 
         function renderInput(q, showFeedback, savedValue) {
-            const disabled = showFeedback || (State.mode === 'TEST' && State.answers[State.currentIndex]);
+            // In TEST mode, savedValue comes from state but is editable (disabled only if study feedback shown)
+            const disabled = showFeedback; 
             
-            if (q.type === 'MATCHING') {
-                // Initialize if not set
-                let selection = savedValue || {};
-                // Force initialization in temp state if needed
-                if (!savedValue && !tempSelection) {
-                    tempSelection = {};
-                } else if(savedValue) {
-                    tempSelection = {...savedValue}; // Load saved
-                }
+            // If in TEST mode, use tempSelection if available, or saved value in State.answers
+            // Actually for Test mode, we save to State.answers on every change.
+            // So savedValue IS the current value.
+            
+            // For STUDY mode, tempSelection is used until submit.
+            // If showFeedback is false, we use tempSelection.
+            
+            let currentValue = savedValue;
+            if (State.mode === 'TEST') {
+                 // In test mode, State.answers[idx] holds { value: ... }
+                 // renderQuiz passes currentAnswer.value which is correct.
+            } else {
+                 if (!showFeedback && tempSelection !== null) currentValue = tempSelection;
+            }
 
+            if (q.type === 'MATCHING') {
+                let selection = currentValue || {};
+                
                 return `
                     <div class="space-y-4">
                         ${q.matchingPairs.map((pair) => {
-                            const currentVal = selection[pair.left] || (tempSelection && tempSelection[pair.left]) || "";
+                            const val = selection[pair.left] || "";
                             let borderColor = "border-stone-200";
                             
                             if (showFeedback) {
-                                if (currentVal === pair.correctRight) borderColor = "border-green-500 bg-green-50";
+                                if (val === pair.correctRight) borderColor = "border-green-500 bg-green-50";
                                 else borderColor = "border-red-500 bg-red-50";
                             }
 
                             return `
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between p-3 border-2 rounded-lg bg-white ${borderColor} gap-2">
                                     <span class="font-medium text-stone-700">${pair.left}</span>
-                                    <select onchange="setMatchingOption('${pair.left}', this.value)" ${disabled ? 'disabled' : ''} class="p-2 border rounded-lg bg-stone-50 min-w-[100px]">
-                                        <option value="" disabled ${!currentVal ? 'selected' : ''}>Escolha...</option>
-                                        ${pair.rightOptions.map(opt => `<option value="${opt}" ${currentVal === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                                    <select onchange="handleInputChange('${pair.left}', this.value, 'MATCHING')" ${disabled ? 'disabled' : ''} class="p-2 border rounded-lg bg-stone-50 min-w-[100px]">
+                                        <option value="" disabled ${!val ? 'selected' : ''}>Escolha...</option>
+                                        ${pair.rightOptions.map(opt => `<option value="${opt}" ${val === opt ? 'selected' : ''}>${opt}</option>`).join('')}
                                     </select>
                                 </div>
                             `;
@@ -859,7 +931,7 @@
             if (q.type === 'MULTIPLE_CHOICE' || q.type === 'TRUE_FALSE') {
                 return q.options.map(opt => {
                     let className = "w-full p-4 text-left rounded-xl border-2 transition-all flex justify-between items-center font-medium ";
-                    const isSelected = savedValue === opt;
+                    const isSelected = currentValue === opt;
                     const isCorrect = opt === q.correctAnswer;
                     
                     if (showFeedback) {
@@ -871,48 +943,48 @@
                         else className += "border-stone-200 hover:border-stone-300 hover:bg-stone-50 bg-white text-stone-700";
                     }
                     
-                    return `<button onclick="selectOption('${opt}')" ${disabled ? 'disabled' : ''} class="${className}">${opt}</button>`;
+                    return `<button onclick="handleInputChange(null, '${opt}', 'SINGLE')" ${disabled ? 'disabled' : ''} class="${className}">${opt}</button>`;
                 }).join('');
             }
             
             if (q.type === 'TEXT_INPUT') {
                 let className = "w-full p-4 text-lg border-2 rounded-xl focus:outline-none focus:ring-4 focus:ring-amber-100 transition-colors ";
                 if (showFeedback) {
-                    const isCorrect = normalizeText(savedValue || "") === normalizeText(q.correctAnswer);
+                    const isCorrect = normalizeText(currentValue || "") === normalizeText(q.correctAnswer);
                     className += isCorrect ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50";
                 } else {
                     className += "border-stone-300";
                 }
                 
                 return `
-                    <input type="text" id="text-input-${q.id}" value="${savedValue || ''}" 
-                    oninput="selectOption(this.value)" ${disabled ? 'disabled' : ''} 
+                    <input type="text" value="${currentValue || ''}" 
+                    oninput="handleInputChange(null, this.value, 'TEXT')" ${disabled ? 'disabled' : ''} 
                     placeholder="Escreve a tua resposta..." class="${className}">
-                    ${showFeedback && normalizeText(savedValue || "") !== normalizeText(q.correctAnswer) ? `<p class="mt-2 text-green-700 font-bold">Resposta correta: ${q.correctAnswer}</p>` : ''}
+                    ${showFeedback && normalizeText(currentValue || "") !== normalizeText(q.correctAnswer) ? `<p class="mt-2 text-green-700 font-bold">Resposta correta: ${q.correctAnswer}</p>` : ''}
                 `;
             }
 
             if (q.type === 'DROPDOWN') {
                 let className = "w-full p-4 appearance-none border-2 rounded-xl bg-white text-lg ";
                 if (showFeedback) {
-                     className += savedValue === q.correctAnswer ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50";
+                     className += currentValue === q.correctAnswer ? "border-green-500 bg-green-50" : "border-red-500 bg-red-50";
                 } else {
                     className += "border-stone-300";
                 }
 
                 return `
                     <div class="relative">
-                        <select onchange="selectOption(this.value)" ${disabled ? 'disabled' : ''} class="${className}">
-                            <option value="" disabled ${!savedValue ? 'selected' : ''}>Seleciona uma opção...</option>
-                            ${q.options.map(opt => `<option value="${opt}" ${savedValue === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                        <select onchange="handleInputChange(null, this.value, 'SINGLE')" ${disabled ? 'disabled' : ''} class="${className}">
+                            <option value="" disabled ${!currentValue ? 'selected' : ''}>Seleciona uma opção...</option>
+                            ${q.options.map(opt => `<option value="${opt}" ${currentValue === opt ? 'selected' : ''}>${opt}</option>`).join('')}
                         </select>
-                        ${showFeedback && savedValue !== q.correctAnswer ? `<p class="mt-2 text-green-700 font-bold">Resposta correta: ${q.correctAnswer}</p>` : ''}
+                        ${showFeedback && currentValue !== q.correctAnswer ? `<p class="mt-2 text-green-700 font-bold">Resposta correta: ${q.correctAnswer}</p>` : ''}
                     </div>
                 `;
             }
 
             if (q.type === 'MULTIPLE_SELECT') {
-                const current = Array.isArray(savedValue) ? savedValue : [];
+                const current = Array.isArray(currentValue) ? currentValue : [];
                 return q.options.map(opt => {
                     const isSelected = current.includes(opt);
                     const isCorrectAnswer = q.correctAnswer.includes(opt);
@@ -928,7 +1000,7 @@
                         else className += "border-stone-200 hover:border-stone-300";
                     }
 
-                    return `<button onclick="toggleMultiSelect('${opt}')" ${disabled ? 'disabled' : ''} class="${className}">
+                    return `<button onclick="handleInputChange(null, '${opt}', 'MULTI')" ${disabled ? 'disabled' : ''} class="${className}">
                         ${opt}
                         ${isSelected ? '<i data-lucide="check" class="w-5 h-5"></i>' : ''}
                     </button>`;
@@ -936,15 +1008,12 @@
             }
 
             if (q.type === 'ORDERING') {
-                // Initialize ordering if empty
-                let items = savedValue;
+                let items = currentValue;
+                // If no value, init with default options
                 if (!items || items.length === 0) {
-                     // Initial state must be shuffled version of correct answer, but consistent
-                     // Since we don't have persistent state for initial shuffle in this simple structure, 
-                     // we'll assume the 'options' provided in DB are the initial shuffled state.
                      items = q.options; 
-                     // Only set if not already set, to avoid reset on re-render
-                     if(!savedValue) setTimeout(() => selectOption(items), 0); 
+                     // IMPORTANT: For Ordering, we must init state immediately if it's empty
+                     // setTimeout(() => handleInputChange(null, items, 'ORDERING'), 0);
                 }
 
                 return `
@@ -952,8 +1021,8 @@
                         ${items.map((item, idx) => `
                             <div class="flex items-center gap-3 p-3 rounded-lg border-2 bg-white ${showFeedback ? (JSON.stringify(items) === JSON.stringify(q.correctAnswer) ? 'border-green-500' : 'border-red-500') : 'border-stone-200'}">
                                 <div class="flex flex-col gap-1">
-                                    <button onclick="moveOrder(${idx}, -1)" ${disabled || idx === 0 ? 'disabled' : ''} class="p-1 hover:bg-stone-100 rounded disabled:opacity-30 text-xs font-bold">▲</button>
-                                    <button onclick="moveOrder(${idx}, 1)" ${disabled || idx === items.length - 1 ? 'disabled' : ''} class="p-1 hover:bg-stone-100 rounded disabled:opacity-30 text-xs font-bold">▼</button>
+                                    <button onclick="handleOrderChange(${idx}, -1)" ${disabled || idx === 0 ? 'disabled' : ''} class="p-1 hover:bg-stone-100 rounded disabled:opacity-30 text-xs font-bold">▲</button>
+                                    <button onclick="handleOrderChange(${idx}, 1)" ${disabled || idx === items.length - 1 ? 'disabled' : ''} class="p-1 hover:bg-stone-100 rounded disabled:opacity-30 text-xs font-bold">▼</button>
                                 </div>
                                 <span class="flex-1 font-medium text-stone-700">${item}</span>
                             </div>
@@ -973,139 +1042,185 @@
 
         // --- INTERACTION ---
 
-        // Temporary storage for current question input before submission
         let tempSelection = null; 
 
-        function selectOption(val) {
-            tempSelection = val;
-            updateUISelection(); 
-        }
+        function handleInputChange(key, value, type) {
+            let newVal = value;
 
-        function setMatchingOption(leftKey, rightVal) {
-            if (!tempSelection || typeof tempSelection !== 'object') tempSelection = {};
-            tempSelection[leftKey] = rightVal;
-            // Don't re-render entire input area to keep focus/state, just update logic var
-            // Actually for matching with simple selects, re-rendering is fine if we pass state back in
-            updateUISelection();
-        }
+            if (type === 'MATCHING') {
+                let current = (State.mode === 'TEST' ? State.answers[State.currentIndex]?.value : tempSelection) || {};
+                newVal = { ...current, [key]: value };
+            } else if (type === 'MULTI') {
+                let current = (State.mode === 'TEST' ? State.answers[State.currentIndex]?.value : tempSelection);
+                if (!Array.isArray(current)) current = [];
+                if (current.includes(value)) newVal = current.filter(i => i !== value);
+                else newVal = [...current, value];
+            }
 
-        function toggleMultiSelect(val) {
-            if (!Array.isArray(tempSelection)) tempSelection = [];
-            if (tempSelection.includes(val)) {
-                tempSelection = tempSelection.filter(i => i !== val);
+            if (State.mode === 'TEST') {
+                // Save immediately in Test Mode
+                State.answers[State.currentIndex] = { value: newVal };
             } else {
-                tempSelection.push(val);
+                // Draft in Study/Training
+                tempSelection = newVal;
             }
-            updateUISelection();
-        }
-
-        function moveOrder(index, direction) {
-            if (!Array.isArray(tempSelection)) tempSelection = [...State.questions[State.currentIndex].options];
-            const newItems = [...tempSelection];
-            [newItems[index], newItems[index + direction]] = [newItems[index + direction], newItems[index]];
-            tempSelection = newItems;
             
-            // Re-render whole input area for ordering
-            const q = State.questions[State.currentIndex];
-            document.getElementById('input-area').innerHTML = renderInput(q, false, tempSelection);
+            // FIX: Don't re-render for TEXT inputs to avoid losing cursor focus
+            if (type !== 'TEXT') {
+                updateUI();
+            }
         }
 
-        function updateUISelection() {
-            // Simple re-render of input area except for text input to keep focus
+        function handleOrderChange(index, direction) {
             const q = State.questions[State.currentIndex];
-            if (q.type !== 'TEXT_INPUT') {
-                document.getElementById('input-area').innerHTML = renderInput(q, false, tempSelection);
-                lucide.createIcons();
+            let current = (State.mode === 'TEST' ? State.answers[State.currentIndex]?.value : tempSelection);
+            
+            if (!current) current = [...q.options];
+            else current = [...current];
+
+            [current[index], current[index + direction]] = [current[index + direction], current[index]];
+            
+            if (State.mode === 'TEST') {
+                State.answers[State.currentIndex] = { value: current };
+            } else {
+                tempSelection = current;
             }
+            updateUI();
+        }
+
+        function updateUI() {
+            const q = State.questions[State.currentIndex];
+            // Fix: Pass current value for Test Mode explicitly to ensure UI updates
+            let currentVal = null;
+            if (State.mode === 'TEST' && State.answers[State.currentIndex]) {
+                currentVal = State.answers[State.currentIndex].value;
+            }
+            
+            const showFeedback = State.answers[State.currentIndex] && State.mode !== 'TEST';
+            
+            document.getElementById('input-area').innerHTML = renderInput(q, showFeedback, currentVal);
+            lucide.createIcons();
         }
 
         function toggleTip() {
             if (State.tipLevel < 2) {
                 State.tipLevel++;
-                renderQuiz(); // Re-render to show tip
+                renderQuiz(); // Re-render whole quiz to show tip area
             }
         }
 
-        function submitAnswer(qid) {
-            const q = State.questions.find(q => q.id === qid);
-
-            // Validation of empty answers
-            if (q.type !== 'ORDERING') { // Ordering always has a value
-                 if (tempSelection === null) return;
-                 if (Array.isArray(tempSelection) && tempSelection.length === 0) return;
-                 if (q.type === 'MATCHING') {
-                     // Check if all pairs are answered
-                     const answeredKeys = Object.keys(tempSelection || {});
-                     if (answeredKeys.length < q.matchingPairs.length) {
-                         alert("Por favor, faz a correspondência de todos os elementos.");
-                         return;
-                     }
-                 }
-            }
-
-            // For Ordering, if tempSelection is null, use options (default state)
-            if (q.type === 'ORDERING' && !tempSelection) {
-                tempSelection = [...q.options];
-            }
-
-            let isCorrect = false;
-
-            if (q.type === 'TEXT_INPUT') {
-                isCorrect = normalizeText(tempSelection) === normalizeText(q.correctAnswer);
-            } else if (q.type === 'MULTIPLE_SELECT') {
-                const s = new Set(tempSelection);
-                const c = new Set(q.correctAnswer);
-                isCorrect = s.size === c.size && [...s].every(x => c.has(x));
-            } else if (q.type === 'ORDERING') {
-                isCorrect = JSON.stringify(tempSelection) === JSON.stringify(q.correctAnswer);
-            } else if (q.type === 'MATCHING') {
-                isCorrect = q.matchingPairs.every(pair => tempSelection[pair.left] === pair.correctRight);
-            } else {
-                isCorrect = tempSelection === q.correctAnswer;
-            }
-
-            State.answers[State.currentIndex] = { correct: isCorrect, value: tempSelection };
-
-            // UPDATE GLOBAL STATS
-            if (State.mode !== 'TEST') { // Update stats live for Study/Training
-                // Initialize Category Stats
-                if (!State.stats.categoryStats) State.stats.categoryStats = {};
-                if (!State.stats.categoryStats[q.category]) State.stats.categoryStats[q.category] = { correct: 0, total: 0 };
-                
-                // Update
-                State.stats.categoryStats[q.category].total++;
-                if (isCorrect) State.stats.categoryStats[q.category].correct++;
-
-                if (isCorrect) {
-                    State.stats.totalCorrect++;
-                    State.stats.totalPoints += q.points;
-                    State.stats.currentStreak++;
-                    if (State.stats.currentStreak > State.stats.bestStreak) {
-                        State.stats.bestStreak = State.stats.currentStreak;
-                    }
-                } else {
-                    State.stats.currentStreak = 0;
+        function submitAnswer() {
+            const q = State.questions[State.currentIndex];
+            
+            // Validation
+            if (q.type !== 'ORDERING') {
+                if (!tempSelection || (Array.isArray(tempSelection) && tempSelection.length === 0) || (q.type === 'MATCHING' && Object.keys(tempSelection).length < q.matchingPairs.length)) {
+                     // For ordering, fallback to default options if null
+                     if (q.type !== 'ORDERING') return; 
                 }
-                checkBadges();
             }
             
-            if (State.mode === 'TEST') {
-                // In test mode, we just save and move on
-                nextQuestion();
+            let val = tempSelection;
+            if (q.type === 'ORDERING' && !val) val = [...q.options];
+
+            let isCorrect = checkCorrectness(q, val);
+
+            // Save Answer
+            State.answers[State.currentIndex] = { correct: isCorrect, value: val };
+
+            // Update Stats (Live)
+            updateLiveStats(q, isCorrect);
+            
+            // Render Feedback
+            tempSelection = null;
+            renderQuiz();
+        }
+
+        function checkCorrectness(q, val) {
+            if (q.type === 'TEXT_INPUT') return normalizeText(val) === normalizeText(q.correctAnswer);
+            if (q.type === 'MULTIPLE_SELECT') {
+                const s = new Set(val);
+                const c = new Set(q.correctAnswer);
+                return s.size === c.size && [...s].every(x => c.has(x));
+            }
+            if (q.type === 'ORDERING') return JSON.stringify(val) === JSON.stringify(q.correctAnswer);
+            if (q.type === 'MATCHING') return q.matchingPairs.every(pair => val[pair.left] === pair.correctRight);
+            return val === q.correctAnswer;
+        }
+
+        function updateLiveStats(q, isCorrect) {
+             // Initialize Category Stats
+            if (!State.stats.categoryStats) State.stats.categoryStats = {};
+            if (!State.stats.categoryStats[q.category]) State.stats.categoryStats[q.category] = { correct: 0, total: 0 };
+            
+            State.stats.categoryStats[q.category].total++;
+            if (isCorrect) State.stats.categoryStats[q.category].correct++;
+
+            if (isCorrect) {
+                State.stats.totalCorrect++;
+                State.stats.totalPoints += q.points;
+                State.stats.currentStreak++;
+                if (State.stats.currentStreak > State.stats.bestStreak) {
+                    State.stats.bestStreak = State.stats.currentStreak;
+                }
             } else {
-                // Study/Training: Show feedback
-                if (isCorrect) State.score += q.points;
-                State.feedbackShown = true;
+                State.stats.currentStreak = 0;
+            }
+            checkBadges();
+        }
+
+        function prevQuestion() {
+            if (State.currentIndex > 0) {
+                State.currentIndex--;
+                tempSelection = null; // Clear temp when moving
+                State.tipLevel = 0;
                 renderQuiz();
             }
         }
 
         function nextQuestion() {
-            State.currentIndex++;
-            State.feedbackShown = false;
-            State.tipLevel = 0;
-            tempSelection = null; // Reset draft
+            if (State.currentIndex < State.questions.length - 1) {
+                State.currentIndex++;
+                tempSelection = null; // Clear temp when moving
+                State.tipLevel = 0;
+                renderQuiz();
+            } else if (State.mode === 'TEST') {
+                // Fallback if button logic fails
+                finishTest();
+            }
+        }
+
+        function retryQuestion() {
+            // Remove answer from state to allow retry in Study Mode
+            delete State.answers[State.currentIndex];
+            tempSelection = null;
             renderQuiz();
+        }
+
+        function finishTest() {
+            // Grade all questions
+            State.questions.forEach((q, idx) => {
+                const ans = State.answers[idx];
+                if (ans && ans.value) {
+                    const isCorrect = checkCorrectness(q, ans.value);
+                    State.answers[idx].correct = isCorrect;
+                    
+                    // Update stats silently for Test mode at the end? 
+                    // Usually tests count for stats too. Let's count them.
+                    updateLiveStats(q, isCorrect);
+                    if (isCorrect) State.score += q.points;
+                } else {
+                    // Unanswered
+                    State.answers[idx] = { correct: false, value: null };
+                    updateLiveStats(q, false);
+                }
+            });
+
+            // Increment games played
+            State.stats.totalGames = (State.stats.totalGames || 0) + 1;
+            State.saveStats();
+            
+            renderResults();
         }
 
         // --- RESULTS ---
@@ -1123,6 +1238,13 @@
                      showToast('Nova Conquista!', `Desbloqueaste: ${badge.name}`, badge.icon);
                      State.saveStats();
                  }
+            }
+            
+            // Increment games played for Study/Training if finishing the set
+            // (Test mode handles it in finishTest)
+            if (State.mode !== 'TEST') {
+                State.stats.totalGames = (State.stats.totalGames || 0) + 1;
+                State.saveStats();
             }
             
             // Classification
@@ -1153,7 +1275,7 @@
                                 
                                 // Format user answer for display
                                 let userVal = 'Sem resposta';
-                                if (ans) {
+                                if (ans && ans.value) {
                                     if (typeof ans.value === 'object' && !Array.isArray(ans.value)) {
                                          // Matching type
                                          userVal = Object.entries(ans.value).map(([k,v]) => `${k} -> ${v}`).join(', ');
@@ -1187,11 +1309,9 @@
                                             ` : ''}
                                         </div>
                                         
-                                        ${!isCorrect || State.mode === 'STUDY' ? `
-                                            <div class="mt-3 text-xs md:text-sm text-stone-600 bg-white/50 p-2 rounded">
-                                                <span class="font-bold">Explicação:</span> ${q.explanation}
-                                            </div>
-                                        ` : ''}
+                                        <div class="mt-3 text-xs md:text-sm text-stone-600 bg-white/50 p-2 rounded">
+                                            <span class="font-bold">Explicação:</span> ${q.explanation}
+                                        </div>
                                     </div>
                                 `;
                             }).join('')}
